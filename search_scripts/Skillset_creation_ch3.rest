@@ -1,0 +1,230 @@
+@base_url={{$dotenv search_base_url}}
+@skilset2create=my-sks-01
+@apikey={{$dotenv api_key}}
+
+@cog_key={{$dotenv cog_key}}
+@cog_sub={{$dotenv cog_sub}}
+@storage_cs={{$dotenv storage_cs}}
+@storage_cont={{$dotenv storage_cont}}
+
+PUT {{base_url}}/skillsets/{{skilset2create}}?api-version=2020-06-30
+Content-Type: application/json  
+api-key: {{apikey}}
+
+{
+"name": "{{skilset2create}}",
+  "description": "Skillset created from vscode",
+  "skills": [
+    {
+      "@odata.type": "#Microsoft.Skills.Text.V3.SentimentSkill",
+      "name": "#4",
+      "description": null,
+      "context": "/document/content",
+      "defaultLanguageCode": "en",
+      "modelVersion": null,
+      "includeOpinionMining": false,
+      "inputs": [
+        {
+          "name": "text",
+          "source": "/document/content"
+        }
+      ],
+      "outputs": [
+        {
+            "name": "sentiment",
+            "targetName": "sentiment"
+        },
+        {
+            "name": "confidenceScores",
+            "targetName": "confidenceScores"
+        },
+        {
+            "name": "sentences",
+            "targetName": "sentences"
+        }
+      ]
+    },
+    {
+      "@odata.type": "#Microsoft.Skills.Text.V3.EntityRecognitionSkill",
+      "name": "#1",
+      "description": null,
+      "context": "/document/content",
+      "categories": [
+        "Product",
+        "PhoneNumber",
+        "Person",
+        "Quantity",
+        "Organization",
+        "IPAddress",
+        "URL",
+        "Email",
+        "Event",
+        "Skill",
+        "Location",
+        "PersonType",
+        "Address",
+        "DateTime"
+      ],
+      "defaultLanguageCode": "en",
+      "minimumPrecision": null,
+      "modelVersion": null,
+      "inputs": [
+        {
+          "name": "text",
+          "source": "/document/content"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "persons",
+          "targetName": "people"
+        },
+        {
+          "name": "organizations",
+          "targetName": "organizations"
+        },
+        {
+          "name": "locations",
+          "targetName": "locations"
+        }
+      ]
+    },
+    {
+      "@odata.type": "#Microsoft.Skills.Text.KeyPhraseExtractionSkill",
+      "name": "#2",
+      "description": null,
+      "context": "/document/content",
+      "defaultLanguageCode": "en",
+      "maxKeyPhraseCount": null,
+      "modelVersion": null,
+      "inputs": [
+        {
+          "name": "text",
+          "source": "/document/content"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "keyPhrases",
+          "targetName": "keyphrases"
+        }
+      ]
+    },
+    {
+      "@odata.type": "#Microsoft.Skills.Util.ShaperSkill",
+      "name": "#3",
+      "description": null,
+      "context": "/document",
+      "inputs": [
+        {
+          "name": "content",
+          "source": "/document/content"
+        },
+        {
+          "name": "metadata_storage_content_type",
+          "source": "/document/metadata_storage_content_type"
+        },
+        {
+          "name": "metadata_storage_size",
+          "source": "/document/metadata_storage_size"
+        },
+        {
+          "name": "metadata_storage_last_modified",
+          "source": "/document/metadata_storage_last_modified"
+        },
+        {
+          "name": "metadata_storage_content_md5",
+          "source": "/document/metadata_storage_content_md5"
+        },
+        {
+          "name": "metadata_storage_name",
+          "source": "/document/metadata_storage_name"
+        },
+        {
+          "name": "metadata_storage_path",
+          "source": "/document/metadata_storage_path"
+        },
+        {
+          "name": "metadata_storage_file_extension",
+          "source": "/document/metadata_storage_file_extension"
+        },
+        {
+          "name": "metadata_content_type",
+          "source": "/document/metadata_content_type"
+        },
+        {
+          "name": "metadata_language",
+          "source": "/document/metadata_language"
+        },
+        {
+          "name": "metadata_author",
+          "source": "/document/metadata_author"
+        },
+        {
+          "name": "metadata_creation_date",
+          "source": "/document/metadata_creation_date"
+        },
+        {
+          "name": "keyPhrases",
+          "source": "/document/content/keyphrases/*"
+        },
+        {
+          "name": "Entities",
+          "sourceContext": "/document/content/entities/*",
+          "inputs": [
+            {
+              "name": "Entity",
+              "source": "/document/content/entities/*/name"
+            },
+            {
+              "name": "EntityType",
+              "source": "/document/content/entities/*/type"
+            },
+            {
+              "name": "EntitySubType",
+              "source": "/document/content/entities/*/subType"
+            },
+            {
+              "name": "Url",
+              "source": "/document/content/entities/*/wikipediaUrl"
+            }
+          ]
+        }
+      ],
+      "outputs": [
+        {
+          "name": "output",
+          "targetName": "objectprojection"
+        }
+      ]
+    }
+  ],
+  "cognitiveServices": {
+    "@odata.type": "#Microsoft.Azure.Search.CognitiveServicesByKey",
+    "description": "{{cog_sub}}",
+    "key": "{{cog_key}}"
+  },
+  "knowledgeStore": {
+    "storageConnectionString": "{{storage_cs}}",
+    "projections": [
+      {
+        "tables": [],
+        "objects": [
+          {
+            "storageContainer": "{{storage_cont}}",
+            "referenceKeyName": null,
+            "generatedKeyName": "secenrichedKey",
+            "source": "/document/objectprojection",
+            "sourceContext": null,
+            "inputs": []
+          }
+        ],
+        "files": []
+      }
+    ],
+    "parameters": {
+      "synthesizeGeneratedKeyName": true
+    }
+  },
+  "encryptionKey": null
+}
