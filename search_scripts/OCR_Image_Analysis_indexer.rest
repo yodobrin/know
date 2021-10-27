@@ -1,0 +1,73 @@
+@base_url={{$dotenv search_base_url}}
+@indexer2create=my-indexer-01
+@index2create=my-index-01
+@skilset2create=my-sks-01
+@apikey={{$dotenv api_key}}
+@ds_name={{$dotenv data_container}}
+
+PUT {{base_url}}/indexers/{{indexer2create}}?api-version=2020-06-30
+Content-Type: application/json  
+api-key: {{apikey}} 
+
+{
+  "name": "{{indexer2create}}",
+  "description": "Second try of October 27",
+  "dataSourceName": "{{ds_name}}",
+  "skillsetName": "{{skilset2create}}",
+  "targetIndexName": "{{index2create}}",
+  "disabled": null,
+  "schedule": null,
+  "parameters": {
+    "batchSize": null,
+    "maxFailedItems": null,
+    "maxFailedItemsPerBatch": null,
+    "base64EncodeKeys": true,
+    "configuration": {
+      "allowSkillsetToReadFileData": true,
+      "dataToExtract":"contentAndMetadata",
+      "imageAction":"generateNormalizedImages"
+    }
+  },
+  "fieldMappings": [],
+  "outputFieldMappings": [
+      {
+"sourceFieldName": "/document/content/people",
+"targetFieldName": "people"
+},
+{
+"sourceFieldName": "/document/normalized_images/*/tags",
+"targetFieldName": "tags"
+},
+      {
+"sourceFieldName": "/document/normalized_images/*/description",
+"targetFieldName": "description"
+},
+{
+"sourceFieldName": "/document/normalized_images/*/categories",
+"targetFieldName": "categories"
+},
+
+{
+"sourceFieldName": "/document/content/mergedText",
+"targetFieldName": "mergedText"
+},
+{
+"sourceFieldName": "/document/content/organizations",
+"targetFieldName": "organizations"
+},
+{
+"sourceFieldName": "/document/content/locations",
+"targetFieldName": "locations"
+},
+{
+"sourceFieldName": "/document/content/keyphrases",
+"targetFieldName": "keyphrases"
+},
+{
+"sourceFieldName": "/document/content/sentiment",
+"targetFieldName": "sentiment"
+}     
+  ]
+  ,
+  "encryptionKey": null
+}
