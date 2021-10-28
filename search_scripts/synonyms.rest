@@ -1,0 +1,16 @@
+@base_url={{$dotenv search_base_url}}
+@synonim=team4-syn-01
+@api_key={{$dotenv api_key}}
+
+
+PUT {{base_url}}/synonymmaps/{{synonim}}?api-version=2020-06-30  
+  Content-Type: application/json  
+  api-key: {{api_key}}  
+
+{
+    "name": "{{synonim}}",
+    "format": "solr",
+    "synonyms": " USA, United States, United States of America\n
+    UK, United Kingdom, Britain, Great Britain \n
+    UAE, United Arab Emirates, Emirates"
+}
