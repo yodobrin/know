@@ -37,6 +37,7 @@ namespace know
             log.LogInformation("TopWords function processed a request.");       
             // code does not care (yet) for missing values, rather assume request payload has the required elements.
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
+            log.LogInformation($"TopWordsgot payload: {requestBody}.");       
             dynamic data = JsonConvert.DeserializeObject(requestBody);
             string text = data.text;
             word_list list = get_top_ten_words(text);
@@ -97,7 +98,7 @@ namespace know
 
             // Construct object for results
             word_list json_result = new word_list();
-            json_result.words = resList;
+            json_result.top_words = resList;
 
             // return the results object
             return json_result;
@@ -107,7 +108,7 @@ namespace know
     // class for results
    public class word_list
     {
-        public List<string> words {get; set;}
+        public List<string> top_words {get; set;}
     } 
    
 }
