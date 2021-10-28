@@ -13,6 +13,7 @@ You agree:
 // This code released under the terms of the 
 // Microsoft Public License (MS-PL, http://opensource.org/licenses/ms-pl.html.)
 using System;
+using System.Text;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -24,13 +25,15 @@ using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
 
 namespace know
 {
     public static class TopWords
     {
         [FunctionName("TopWords")]
-        public static async Task<IActionResult> Run(
+        public static async Task<HttpResponseMessage> Run(
             [HttpTrigger(AuthorizationLevel.Function, "post", Route = null)] HttpRequest req,
             ILogger log)
         {
@@ -58,8 +61,11 @@ namespace know
             
             // // // prep response
             string responseMessage = $"{JsonConvert.SerializeObject(response)}";
-            // string responseMessage = "ok";
-            return new OkObjectResult(responseMessage);
+
+            return new HttpResponseMessage(HttpStatusCode.OK) {
+                  Content = new StringContent(responseMessage, Encoding.UTF8, "application/json")
+            };
+            
         }
 
         public static word_list get_top_ten_words(string text) 
