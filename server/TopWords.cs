@@ -39,7 +39,7 @@ namespace know
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
             log.LogInformation($"TopWordsgot payload: {requestBody}.");       
             dynamic data = JsonConvert.DeserializeObject(requestBody);
-            string text = data.text;
+            string text = data?.text;
             word_list list = get_top_ten_words(text);
             // prep response
             string responseMessage = $"{JsonConvert.SerializeObject(list)}";
