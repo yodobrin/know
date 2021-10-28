@@ -37,13 +37,28 @@ namespace know
             log.LogInformation("TopWords function processed a request.");       
             // code does not care (yet) for missing values, rather assume request payload has the required elements.
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-            log.LogInformation($"TopWordsgot payload: {requestBody}.");       
-            dynamic data = JsonConvert.DeserializeObject(requestBody);
-            string text = data?.text;
-            word_list list = get_top_ten_words(text);
-            // prep response
-            string responseMessage = $"{JsonConvert.SerializeObject(list)}";
-
+            // log.LogInformation($"TopWordsgot payload: {requestBody}.");       
+            dynamic body = JsonConvert.DeserializeObject(requestBody);
+            dynamic values = body.values;
+            dynamic response = new System.Dynamic.ExpandoObject();
+            List<dynamic> resValues = new List<dynamic>();
+            
+            // log.LogInformation($"values:{values[0].data.text}");
+            foreach(dynamic item in values)
+            {
+                string text = item.data.mergedText;    
+                word_list list = get_top_ten_words(text);
+                dynamic response_item = new System.Dynamic.ExpandoObject();
+                response_item.recordId = item.recordId;
+                response_item.data = list;
+                resValues.Add(response_item);
+            }
+            response.values = resValues;
+            
+            
+            // // // prep response
+            string responseMessage = $"{JsonConvert.SerializeObject(response)}";
+            // string responseMessage = "ok";
             return new OkObjectResult(responseMessage);
         }
 
@@ -109,6 +124,20 @@ namespace know
    public class word_list
     {
         public List<string> top_words {get; set;}
-    } 
+    }
+
+    // public class SkillContent
+    // {
+    //     [JsonProperty("recordId")]
+    //     public string recordId {get;set;}
+    //     [JsonProperty("data")]
+    //     public SkillData data {get;set;}
+    // } 
+
+    // public class SkillData
+    // {
+    //     [JsonProperty("text")]
+    //     public string text {get;set;}
+    // }
    
 }
