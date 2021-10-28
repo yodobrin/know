@@ -1,4 +1,11 @@
 # Knowledge Mining - leveraging Azure Search
+While working directly on the portal seem reasonable, it is appropriate for simple trials, and learning. For other reasons such as product development, it is recommended to use the rest api, for configuration of index, skillset and indexers.
+This repo provide few sample such scripts, it uses the vscode REST extention and its parameter/variable scheme.
+
+## Structure
+The repo contains two main directories:
+- server - contains azure function, that is used as enrichment capability. it accepts text in its payload and return with the top 10 words. note that this folder also contains a `test.rest` file, used to test the function.
+- search_scripts - contains the scripts used for skillset, index and indexer
 
 
 ### Setup
