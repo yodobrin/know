@@ -1,0 +1,20 @@
+@base_url={{$dotenv search_base_url}}
+@indexer2create=my-indexer-01
+@index2create=my-index-01
+@skilset2create=my-sks-01
+@apikey={{$dotenv api_key}}
+@ds_name={{$dotenv data_container}}
+
+@ds_cs = {{$dotenv storage_cs}}
+
+PUT {{base_url}}/datasources/{{ds_name}}?api-version=2020-06-30
+    Content-Type: application/json  
+    api-key: {{apikey}}
+
+{   
+    "name" : "{{ds_name}}" ,  
+    "description" : "demo data source",  
+    "type" : "azureblob",
+    "credentials" :  { "connectionString" : "{{ds_cs}}" },  
+    "container" :  { "name" : "{{ds_name}}" }
+} 
